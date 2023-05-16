@@ -1,0 +1,43 @@
+from datetime import date, datetime,timedelta
+   
+lastSupplydate = ['2023-04-18 10:12:23','2023-04-15 8:10:23', '2023-04-10 04:12:23', '2023-03-18 16:12:00']
+currentSupplydate = ['2023-05-20 16:19:23','2023-05-18 10:50:23','2023-05-18 14:55:23','2023-03-28 10:12:23']
+qbs_in_percent = [2,5,10,3]
+qs_in_ltrs = [1500,1870.75,2050.87,2100]
+SiteID = ['lg2144','b3024','t0199','b5098']
+
+def no_of_days(LSD, CSD): # function to calculate the days difference 
+    day_diff = (CSD - LSD) # difference between the last supply date and current supply date.
+    return  day_diff.days
+
+        
+for dt1,dt2,percent,ltrs,id in zip(lastSupplydate,currentSupplydate,qbs_in_percent,qs_in_ltrs,SiteID):    
+
+    formats = "%Y-%m-%d %H:%M:%S"
+    LSD = datetime.strptime(dt1, formats) # LSD : Last Supply date.
+    CSD = datetime.strptime(dt2, formats) # CSD : Current Supply date.
+    print('CSD =',CSD)
+    print('LSD =',LSD)
+    no_of_days(LSD, CSD)
+    print('Supply Days Interval is',no_of_days(LSD, CSD),'days')  
+
+    QBS_in_percent = float(percent ) # QBS : Quantity Before Supply in % 
+    QBS_in_ltrs =  QBS_in_percent/100 * 2500 # QBS : Quantity Before Supply litres 
+    QS_in_ltrs = float(ltrs)  # Quantity After Supply litres 
+    if QBS_in_percent > 2 :
+        Tolerance = 50
+        TQAS_in_ltrs = QBS_in_ltrs + QS_in_ltrs  + Tolerance   # TQS : Total Quantity After Supply in litres
+    else:
+        TQAS_in_ltrs = QBS_in_ltrs + QS_in_ltrs    # TQS : Total Quantity After Supply in litres
+    TQAS_in_percent = TQAS_in_ltrs/2500*100 # Total Quantity After Supply in %
+    CPD_in_litres = round(TQAS_in_ltrs/no_of_days(LSD, CSD))    # CPD : Consumption per Day in litres
+    CPD_in_percent = round(CPD_in_litres/2500 * 100, 1) # CPD : Consumption per Day in %
+    print(f"CPD of",id,':',(str(CPD_in_litres)+'Ltrs',str(CPD_in_percent)+'%'))
+
+    next_supply_date = CSD + timedelta(days=no_of_days(LSD,CSD))
+    print("Next Supply Date for",id, ":",next_supply_date )
+
+
+
+    
+    
